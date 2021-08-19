@@ -221,7 +221,8 @@ class _HomePageState extends State<HomePage> {
                           imageUrl: imageUrl.text,
                           height: 400.0,
                           width: 400.0,
-                          placeholder: (_, i) => CircularProgressIndicator(),
+                          placeholder: (_, i) =>
+                              Center(child: CircularProgressIndicator()),
                         ),
                   Row(
                     children: [
