@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:moviez/blocs/bloc/intro_bloc.dart';
 import 'package:moviez/models/movies.dart';
 import 'package:moviez/screens/homepage.dart';
 import 'package:moviez/screens/intropage.dart';
 import 'package:moviez/utils/constants.dart';
 import 'package:moviez/utils/themes.dart';
+
+import 'blocs/intro_bloc/intro_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

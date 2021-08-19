@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:lottie/lottie.dart';
-import 'package:moviez/blocs/bloc/intro_bloc.dart';
+import 'package:moviez/blocs/intro_bloc/intro_bloc.dart';
+import 'package:moviez/models/movies.dart';
+import 'package:moviez/utils/moviesimport.dart';
 
 class EmptyList extends StatelessWidget {
-  const EmptyList({Key? key}) : super(key: key);
+  const EmptyList({Key? key, required this.callBackToUpdateState})
+      : super(key: key);
+
+  final Function() callBackToUpdateState;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +42,19 @@ class EmptyList extends StatelessWidget {
               color: Colors.grey.shade800,
             ),
           ),
-          TextButton(onPressed: () => {}, child: Text('Import from Web'))
+          TextButton(
+              onPressed: () {
+                final movieBox = Hive.box('movies');
+                movieprelist.forEach((element) {
+                  movieBox.add(new Movies(
+                      name: element['movie'] ?? '',
+                      dirName: element['director'] ?? '',
+                      imageUrl: element['imageUrl'] ?? '',
+                      netwokImage: true));
+                });
+                callBackToUpdateState();
+              },
+              child: Text('Import from file'))
         ],
       ),
     );

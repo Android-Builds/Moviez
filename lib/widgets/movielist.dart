@@ -12,9 +12,11 @@ class MovieList extends StatelessWidget {
   const MovieList({
     Key? key,
     required this.edit,
+    required this.delete,
   }) : super(key: key);
 
   final Function(int) edit;
+  final Function(int) delete;
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +86,7 @@ class MovieList extends StatelessWidget {
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () =>
-                                          moviesBox.deleteAt(index),
+                                      onPressed: () => delete(index),
                                       icon: Icon(
                                         Icons.delete,
                                         size: size.width * 0.04,
@@ -120,7 +121,7 @@ class MovieList extends StatelessWidget {
     return movie.netwokImage
         ? CachedNetworkImage(
             imageUrl: movie.imageUrl,
-            placeholder: (_, i) => CircularProgressIndicator(),
+            placeholder: (_, i) => Center(child: CircularProgressIndicator()),
           )
         : Image.file(File(movie.imageUrl));
   }

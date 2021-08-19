@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:moviez/blocs/bloc/intro_bloc.dart';
+import 'package:moviez/blocs/intro_bloc/intro_bloc.dart';
 
 class IntroWidget extends StatefulWidget {
   const IntroWidget({Key? key}) : super(key: key);
@@ -78,7 +78,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                       SizedBox(
                         width: size.width * 0.7,
                         child: Text(
-                          'Click here to import precompiled list from the web',
+                          'Click here to import precompiled list',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: size.width * 0.04,
@@ -100,7 +100,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                             BlocProvider.of<IntroBloc>(context)
                                 .add(IntroEvent(false));
                           },
-                          child: Text('Import from Web'),
+                          child: Text('Import from file'),
                         ),
                       ),
                     ],

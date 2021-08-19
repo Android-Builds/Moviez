@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:moviez/blocs/bloc/intro_bloc.dart';
-import 'package:moviez/main.dart';
+import 'package:moviez/blocs/intro_bloc/intro_bloc.dart';
 import 'package:moviez/models/movies.dart';
 import 'package:moviez/screens/intropage.dart';
 import 'package:moviez/utils/constants.dart';
@@ -37,6 +36,16 @@ class _HomePageState extends State<HomePage> {
   TextEditingController dirName = new TextEditingController();
 
   final moviesBox = Hive.box('movies');
+
+  void deleteMovie(int index) {
+    moviesBox.deleteAt(index);
+    moviesBox.compact();
+    if (moviesBox.isEmpty) setState(() {});
+  }
+
+  void callBackToUpdateState() {
+    setState(() {});
+  }
 
   void editMovie(int index) {
     final Movies movie = moviesBox.getAt(index);
@@ -134,16 +143,21 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.logout)),
                   widget.googleLogIn
                       ? IconButton(
-                          onPressed: () => inputDialog(size, 0, false),
+                          onPressed: () => inputDialog(size, 0, false).then(
+                              (value) =>
+                                  {if (moviesBox.length == 1) setState(() {})}),
                           icon: Icon(Icons.add),
                         )
                       : SizedBox.shrink(),
                 ],
               ),
               body: Hive.box('movies').isEmpty
-                  ? EmptyList()
+                  ? EmptyList(
+                      callBackToUpdateState: callBackToUpdateState,
+                    )
                   : MovieList(
                       edit: editMovie,
+                      delete: deleteMovie,
                     ),
             ),
             BlocBuilder<IntroBloc, IntroState>(builder: (context, state) {
@@ -165,8 +179,9 @@ class _HomePageState extends State<HomePage> {
   ) {
     return showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('AlertDialog Title'),
+        title: Text(edit ? 'Edit Movie' : 'Add Movie'),
         content: StatefulBuilder(
           builder:
               (BuildContext context, void Function(void Function()) setState) {
@@ -274,7 +289,16 @@ class _HomePageState extends State<HomePage> {
           netwokImage: imageUrl.text != '',
         ),
       );
-    }
+    } else
+      showError();
+  }
+
+  showError() {
+    List fields = [];
+    if (imageUrl.text == '' && image == null) fields.add('Image');
+    if (name.text == '') fields.add('Movie Name');
+    if (dirName.text == '') fields.add('Director Name');
+    showSnackBar(fields.join(', '));
   }
 
   void addNewMovie() {
@@ -289,7 +313,23 @@ class _HomePageState extends State<HomePage> {
           netwokImage: imageUrl.text != '',
         ),
       );
-    }
+    } else
+      showError();
+  }
+
+  void showSnackBar(String field) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$field is empty. Add to continue !'),
+        action: SnackBarAction(
+          label: 'Dismiss',
+          onPressed: () =>
+              ScaffoldMessenger.of(context).removeCurrentSnackBar(),
+        ),
+        behavior: SnackBarBehavior.floating,
+        elevation: 5.0,
+      ),
+    );
   }
 
   void clearAll() {
@@ -302,8 +342,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> pasteImage() {
     return showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('AlertDialog Title'),
+        title: const Text('Paste Poster Link'),
         content: TextField(
           controller: imageUrl,
           decoration: InputDecoration(hintText: 'Image Url'),
